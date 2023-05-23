@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Axiforma';
+  font-family: 'Poppins';
   src: url('../public/Fonts/Poppins/Poppins-Bold.ttf');
   font-weight: bold;
   font-style: normal;

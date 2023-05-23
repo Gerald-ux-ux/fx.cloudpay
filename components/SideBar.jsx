@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 function SideBar() {
+  const router = useRouter();
   const [activeItem, setActiveItem] = useState("");
 
   const handleItemClick = (itemName) => {
     setActiveItem(itemName);
+    router.push(`${itemName.toLowerCase()}`);
   };
 
+  useEffect(() => {
+    const routeName = router.pathname.replace("/", "");
+    setActiveItem(routeName.charAt(0).toUpperCase() + routeName.slice(1));
+  }, [router.pathname]);
+
   return (
-    <div className="flex  flex-col items-start">
+    <div className="flex flex-col items-start">
       <img src="/Images/Cloudpay.svg" alt="" className="mt-4" />
 
       <div className="flex flex-col absolute top-36 space-y-8 justify-center items-start">

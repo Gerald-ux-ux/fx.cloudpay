@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import SideBar from "./SideBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,14 +12,21 @@ import {
   PlusCircleIcon,
   PlusIcon,
 } from "@heroicons/react/20/solid";
+import AddCollection from "./AddCollection";
+import User from "./User";
 
 function Landing() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggle = () => setIsOpen(!isOpen);
+  
   return (
     <>
       <div className="flex flex-row h-full ">
         <SideBar />
         <div className="flex w-full mr-8 ml-8 flex-col">
-          <div className="flex mr-4  items-center mt-16 flex-row w-full justify-between">
+          <User/>
+          <div className="flex mr-4  items-center mt-20 flex-row w-full justify-between">
             <div className="flex items-center space-x-1">
               <p className="font-normal text-sm">Today </p>
               <FontAwesomeIcon icon={faChevronDown} />
@@ -90,21 +97,44 @@ function Landing() {
                     className="bg-[#D7DADF] p-1 w-4/12 border text-xs text-center rounded-lg"
                   />
                 </div>
-                <button className="text-base flex">
+                <button onClick={toggle} className=" border p-1 rounded-xl border-[#06f] justify-center items-center text-base flex">
                   <PlusIcon className="h-5 rounded-full mr-2 bg-[#D7DADF] w-5" />{" "}
                   Add a collection
                 </button>
+                <AddCollection toggle={toggle} isOpen={isOpen} />
               </div>
               <div className="flex flex-col px-8  justify-between">
                 <div className="border-b flex justify-between w-full">
-                  <p className=" text-sm">Name</p>
-                  <p className=" text-sm">Collection</p>
+                  <p className=" text-base">Name</p>
+                  <p className=" text-base">Collection</p>
                 </div>
-                <div className="flex-col flex justify-between w-full">
+                <div className="flex-col flex justify-between space-y-2 w-full">
+                  {/* Display the collections of the specific day */}
                   <div className="flex  justify-between">
-                    <p className=" text-sm">Name</p>
-                    <p className=" text-sm">Collection</p>
+                    <p className=" text-sm">Dubai</p>
+                    <p className=" text-sm">43,299</p>
                   </div>
+                  <div className="flex  justify-between">
+                    <p className=" text-sm">Dubai</p>
+                    <p className=" text-sm">43,299</p>
+                  </div>
+                  <div className="flex  justify-between">
+                    <p className=" text-sm">Dubai</p>
+                    <p className=" text-sm">43,299</p>
+                  </div>
+                  <div className="flex  justify-between">
+                    <p className=" text-sm">Dubai</p>
+                    <p className=" text-sm">43,299</p>
+                  </div>
+                  <div className="flex  justify-between">
+                    <p className=" text-sm">Dubai</p>
+                    <p className=" text-sm">43,299</p>
+                  </div>
+                  <div className="flex  justify-between">
+                    <p className=" text-sm">Dubai</p>
+                    <p className=" text-sm">43,299</p>
+                  </div>
+                 
                 </div>
               </div>
             </div>
