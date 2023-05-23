@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Axiforma';
+  src: url('../public/Fonts/Poppins/Poppins-Bold.ttf');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../public/Fonts/Poppins/Poppins-Light.ttf');
+  font-weight: light;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../public/Fonts//Poppins/Poppins-SemiBold.ttf');
+  font-weight: semi-bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../public/Fonts/Poppins/Poppins-Regular.ttf');
+  font-weight: regular;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../public/Fonts/Poppins/Poppins-Medium.ttf');
+  font-weight: medium;
+  font-style: normal;
+}
+
+
+input:focus {
+  border-color: #06f;
+   outline: none;
+}
+
+
