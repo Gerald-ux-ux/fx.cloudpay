@@ -19,9 +19,9 @@ function SideBar() {
     <div className="flex flex-col items-start">
       <img src="/Images/Cloudpay.svg" alt="" className="mt-4" />
 
-      <div className="flex flex-col absolute top-36 space-y-8 justify-center items-start">
+      <div className="flex flex-col absolute top-36 space-y-2 justify-center items-start">
         <div
-          className={`flex items-center justify-center cursor-pointer space-x-2 ${
+          className={`flex items-center hover:bg-slate-300 w-full p-2 rounded-lg  cursor-pointer space-x-2 ${
             activeItem === "Home" ? "text-blue-500" : "text-black"
           }`}
           onClick={() => handleItemClick("Home")}
@@ -30,7 +30,7 @@ function SideBar() {
           <p>Home</p>
         </div>
         <div
-          className={`flex items-center cursor-pointer justify-between space-x-2 ${
+          className={`flex items-center hover:bg-slate-300 w-full p-2 rounded-lg cursor-pointer justify-between space-x-2 ${
             activeItem === "Transactions" ? "text-blue-500" : "text-black"
           }`}
           onClick={() => handleItemClick("Transactions")}
@@ -40,7 +40,7 @@ function SideBar() {
         </div>
 
         <div
-          className={`flex items-center cursor-pointer justify-between space-x-2 ${
+          className={`flex items-center hover:bg-slate-300 w-full p-2 rounded-lg cursor-pointer  space-x-2 ${
             activeItem === "Users" ? "text-blue-500" : "text-black"
           }`}
           onClick={() => handleItemClick("Users")}
@@ -49,7 +49,7 @@ function SideBar() {
           <p>Users</p>
         </div>
         <div
-          className={`flex items-center cursor-pointer justify-between space-x-2 ${
+          className={`flex items-center hover:bg-slate-300 w-full p-2 rounded-lg cursor-pointer  space-x-2 ${
             activeItem === "Balance" ? "text-blue-500" : "text-black"
           }`}
           onClick={() => handleItemClick("Balance")}

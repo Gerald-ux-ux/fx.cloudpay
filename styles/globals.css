@@ -3,45 +3,54 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Poppins';
-  src: url('../public/Fonts/Poppins/Poppins-Bold.ttf');
+  font-family: "Poppins";
+  src: url("../public/Fonts/Poppins/Poppins-Bold.ttf");
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Poppins';
-  src: url('../public/Fonts/Poppins/Poppins-Light.ttf');
+  font-family: "Poppins";
+  src: url("../public/Fonts/Poppins/Poppins-Light.ttf");
   font-weight: light;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Poppins';
-  src: url('../public/Fonts//Poppins/Poppins-SemiBold.ttf');
+  font-family: "Poppins";
+  src: url("../public/Fonts//Poppins/Poppins-SemiBold.ttf");
   font-weight: semi-bold;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Poppins';
-  src: url('../public/Fonts/Poppins/Poppins-Regular.ttf');
+  font-family: "Poppins";
+  src: url("../public/Fonts/Poppins/Poppins-Regular.ttf");
   font-weight: regular;
   font-style: normal;
 }
 
-
 @font-face {
-  font-family: 'Poppins';
-  src: url('../public/Fonts/Poppins/Poppins-Medium.ttf');
+  font-family: "Poppins";
+  src: url("../public/Fonts/Poppins/Poppins-Medium.ttf");
   font-weight: medium;
   font-style: normal;
 }
 
-
 input:focus {
   border-color: #06f;
-   outline: none;
+  outline: none;
 }
 
+.text {
+  color: #06f;
+}
 
+.primary {
+  background-color: #06f;
+}
+
+.foot {
+  padding: 2px;
+  border-radius: 12px;
+}

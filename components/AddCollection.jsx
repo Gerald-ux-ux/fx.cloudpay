@@ -1,7 +1,31 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 function AddCollection({ isOpen, toggle }) {
+  const [nameValue, setNameValue] = useState("");
+  const [collectionValue, setCollectionValue] = useState("");
+
+  const handleAddToCollection = () => {
+    const currentDate = new Date().toISOString().split("T")[0];
+    const url = `http://127.0.0.1:3001/collections?date=${currentDate}`;
+
+    axios
+      .post(url, {
+        amount: collectionValue,
+        collection: nameValue,
+      })
+      .then((response) => {
+        toggle();
+        // Handle the response data
+        console.log(response.data);
+      })
+      .catch((error) => {
+        // Handle any errors
+        console.error(error);
+      });
+  };
+
   const handleClose = () => {
     toggle();
   };
@@ -10,10 +34,6 @@ function AddCollection({ isOpen, toggle }) {
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white relative rounded-xl  justify-center items-center flex flex-col p-12 w-2/2">
-            <XMarkIcon
-              onClick={handleClose}
-              className=" bg-[#06f] cursor-pointer text-white absolute top-2 right-4 rounded-full h-6 w-6"
-            />
             <div className="flex justify-center items-center flex-col">
               <div className="flex justify-between space-x-3 flex-row">
                 <div className="">
@@ -21,6 +41,8 @@ function AddCollection({ isOpen, toggle }) {
                   <input
                     type="text"
                     placeholder="Name"
+                    value={nameValue}
+                    onChange={(e) => setNameValue(e.target.value)}
                     className="border p-2 rounded-lg w-full"
                   />
                 </div>
@@ -29,15 +51,27 @@ function AddCollection({ isOpen, toggle }) {
                   <input
                     type="Number"
                     placeholder="32,344"
+                    value={collectionValue}
+                    onChange={(e) => setCollectionValue(e.target.value)}
                     className="border rounded-lg p-2 w-full"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="w-full mt-4 flex justify-center items-center mx-4">
-              <button className=" font-light justify-center w-full items-center flex rounded-full py-2 bg-[#06f] text-white  ">
+            <div className="w-full mt-4 flex justify-center space-x-4 items-center mx-4">
+              <button
+                onClick={handleAddToCollection}
+                className=" font-light justify-center w-full items-center flex rounded-xl py-2 bg-[#06f] text-white  "
+              >
                 Add to Collection
+              </button>
+
+              <button
+                onClick={handleClose}
+                className=" font-light justify-center w-full items-center flex rounded-xl py-2 border border-[#06f] text-black/50  "
+              >
+                Cancel
               </button>
             </div>
           </div>
