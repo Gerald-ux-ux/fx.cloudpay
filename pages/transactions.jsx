@@ -3,9 +3,11 @@ import User from "@/components/User";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-function transactions() {
+function Transactions() {
   const [collections, setCollections] = useState([]);
+  const [disbursements, setDisbursements] = useState([]);
   const [float, setFloat] = useState([]);
+  const [rateValue, setRateValue] = useState([]);
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
@@ -24,43 +26,11 @@ function transactions() {
       .catch((error) => {
         console.error(error);
       });
-  });
-
-  async function getUSDtoAEDRate() {
-    try {
-      const response = await axios.get(
-        "https://api.exchangerate-api.com/v4/latest/USD"
-      );
-      const rates = response.data.rates;
-      const usdToAEDRate = rates["AED"];
-      return usdToAEDRate;
-    } catch (error) {
-      console.error("Error fetching USD to AED rate:", error);
-      return null;
-    }
-  }
-
-  const calcTotalAed = async () => {
-    try {
-      let total = 0;
-      const usdToAEDRate = await getUSDtoAEDRate();
-      if (usdToAEDRate) {
-        float.forEach((item) => {
-          total += item.amount.toLocaleString();
-        });
-        total /= usdToAEDRate.toLocaleString();
-      }
-      return total;
-    } catch (error) {
-      console.error("Error calculating total in AED:", error);
-      return null;
-    }
-  };
+  }, []);
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/collections? ${currentDate}`;
-
+    const url = `http://127.0.0.1:3001/collections?date=${currentDate}`;
     axios
       .get(url, {
         headers: {
@@ -72,24 +42,107 @@ function transactions() {
         console.log(response.data);
       })
       .catch((error) => {
-        // Handle any errors
+        console.error(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const currentDate = new Date().toISOString().split("T")[0];
+    const url = `http://127.0.0.1:3001/rates?date=${currentDate}`;
+
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setRateValue(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  const calcClosingBalance = () => {
+    let totalCollections = calcUsdToAed();
+    console.log(calcUsdToAed());
+
+    float.forEach(() => {
+      totalCollections -= calcDisbursementTotal();
+
+      console.log(calcDisbursementTotal());
+    });
+    return totalCollections.toLocaleString();
+  };
+
+  const calcDisbursements = () => {
+    let totalDisbursements = 0;
+    if (rateValue && rateValue.length > 0) {
+      const rate = rateValue[0].amount;
+      // Divide each collection by the rate
+      collections.forEach((collection) => {
+        const disbursement = collection.amount / rate;
+        totalDisbursements += disbursement;
+      });
+    }
+
+    return totalDisbursements;
+  };
+
+  const handleAddDisbursments = (amount) => {
+    const url = "http://127.0.0.1:3001/disbursments";
+
+    axios
+      .post(url, {
+        amount: amount.replace(/[.,]/g, ""),
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    const currentDate = new Date().toISOString().split("T")[0];
+    const url = `http://127.0.0.1:3001/disbursments?date=${currentDate}`;
+
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setDisbursements(response.data);
+        console.log(response.data);
+        const calculatedValue = calcDisbursements();
+        handleAddDisbursments(calculatedValue);
+        const totalDisbursement = calcDisbursementTotal();
+        console.log(totalDisbursement);
+      })
+      .catch((error) => {
         console.error(error);
       });
   }, []);
 
   const calcDisbursementTotal = () => {
     let total = 0;
-    collections.forEach((item) => {
-      total += item.amount;
+    disbursements.forEach((item) => {
+      if (item.disbursment !== null) {
+        total += item.disbursment;
+      }
+
+      console.log(total);
     });
-    return total.toLocaleString();
+    return total;
   };
 
   const calcNumberTotal = () => {
-    let total = 0;
-    collections.forEach((item) => {
-      total += item.index;
-    });
+    const total = collections.length;
     return total.toLocaleString();
   };
 
@@ -99,6 +152,18 @@ function transactions() {
       total += item.amount;
     });
     return total.toLocaleString();
+  };
+
+  const calcUsdToAed = () => {
+    if (float.length === 0) {
+      return 0;
+    }
+
+    let rate = 3.67;
+    float.forEach((item) => {
+      rate *= item.amount;
+    });
+    return rate.toLocaleString();
   };
 
   return (
@@ -116,12 +181,13 @@ function transactions() {
           </div>
 
           <div className="flex justify-between w-full  p-4 bg-[#EFF1F4] rounded-lg items-center">
-            <p className="text-lg">
-              Opening balance <span className="font-semibold">34,123 AED</span>
+            <p className="">
+              Opening balance{" "}
+              <span className="font-semibold">{calcUsdToAed()}</span>
             </p>
-            <p className=" text-lg">
-              Closing balance
-              <span className=" font-semibold">2,334 AED</span>
+            <p className="">
+              Closing balance{" "}
+              <span className=" font-semibold">{calcClosingBalance()}</span>
             </p>
           </div>
           <div className="flex bg-[#EFF1F4] p-4 rounded-xl mt-4 flex-col">
@@ -141,32 +207,34 @@ function transactions() {
                 </tr>
               </thead>
               <tbody className="w-full">
-                <tr>
-                  {collections && collections.length > 0 ? (
-                    collections.map((item, index) => (
-                      <div key={index} className="text-sm font-normal">
-                        <td>{index + 1}</td>
-                        <td>{item.name}</td>
-                        <td>{item.amount}</td>
-                        <td>{item.amount}</td>
-                      </div>
-                    ))
-                  ) : (
+                {collections && collections.length > 0 ? (
+                  collections.map((item, index) => (
+                    <tr key={index}>
+                      <td className="text-sm font-normal">{index + 1}</td>
+                      <td className="text-sm font-normal">{item.name}</td>
+                      <td className="text-sm font-normal">
+                        {item.amount.toLocaleString()}
+                      </td>
+                      <td className="text-sm font-normal">
+                        {calcDisbursements()}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
                     <td
                       colSpan="4"
                       className="text-sm pt-4 pb-4 font-normal text-center"
                     >
                       No transactions were made on this day
                     </td>
-                  )}
-                </tr>
+                  </tr>
+                )}
               </tbody>
               <tfoot className="">
                 <tr>
                   <td className="text-sm font-semibold">Total</td>
-                  <td className="text-sm font-semibold ">
-                    {calcNumberTotal()}
-                  </td>
+                  <td className="text-sm font-semibold">{calcNumberTotal()}</td>
                   <td className="text-sm font-semibold">{calculateTotal()}</td>
                   <td className="text-sm font-semibold">
                     {calcDisbursementTotal()}
@@ -181,4 +249,4 @@ function transactions() {
   );
 }
 
-export default transactions;
+export default Transactions;

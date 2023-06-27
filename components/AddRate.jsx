@@ -1,10 +1,24 @@
-import { PlusIcon } from "@heroicons/react/20/solid";
+import axios from "axios";
 import React, { useState } from "react";
 
 function AddRate({ handleOpen, openRates }) {
   const [rateValue, setRateValue] = useState("");
 
-  const handleAddRate = () => {};
+  const handleAddRate = () => {
+    const url = "http://127.0.0.1:3001/rates";
+
+    axios
+      .post(url, {
+        amonut: rateValue,
+      })
+      .then((response) => {
+        handleOpen();
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const handleClose = () => {
     handleOpen();
@@ -23,14 +37,14 @@ function AddRate({ handleOpen, openRates }) {
                     <input
                       type="number"
                       placeholder="38.8"
-                      // value={nameValue}
-                      // onChange={(e) => setNameValue(e.target.value)}
+                      value={rateValue}
+                      onChange={(e) => setRateValue(e.target.value)}
                       className="border p-2 rounded-lg w-full"
                     />
                   </div>
                   <div className="w-full mt-4 flex justify-center space-x-4 items-center mx-4">
                     <button
-                      // onClick={handleAddToCollection}
+                      onClick={handleAddRate}
                       className=" font-light justify-center w-full items-center flex rounded-xl py-2 bg-[#06f] text-white  "
                     >
                       Add to Collection

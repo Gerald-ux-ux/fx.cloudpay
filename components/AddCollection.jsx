@@ -13,6 +13,7 @@ function AddCollection({ isOpen, toggle }) {
     axios
       .post(url, {
         amount: collectionValue,
+        user_id: 11,
         collection: nameValue,
       })
       .then((response) => {

@@ -6,7 +6,7 @@ function User() {
 
   useEffect(() => {
     const url = "http://127.0.0.1:3001/users";
-
+    
     axios
       .get(url, {
         headers: {
@@ -17,7 +17,7 @@ function User() {
         setUsers(res.data);
         console.log(res.data);
       })
-      .catch((err) => console.err(err));
+      .catch((error) => console.error(error));
   }, []);
 
   return (

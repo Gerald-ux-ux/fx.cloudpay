@@ -9,55 +9,47 @@ function balance() {
   const [float, setFloat] = useState([]);
   const [show, setShow] = useState(false);
   const [amount, setAmount] = useState("");
+  const [collections, setCollections] = useState("");
 
-  useEffect(() => {
-    const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/openings?date=${currentDate}`;
+  // Fetching the Float
+ useEffect(() => {
+   const currentDate = new Date().toISOString().split("T")[0];
+   const url = `http://127.0.0.1:3001/openings?date=${currentDate}`;
 
-    axios
-      .get(url, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        setFloat(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  });
+   axios
+     .get(url, {
+       headers: {
+         "Content-Type": "application/json",
+       },
+     })
+     .then((response) => {
+       const data = response.data;
+       const floatArray = Array.isArray(data) ? data : [data]; // Convert object to array if it's not already an array
+       setFloat(floatArray);
+       console.log(floatArray);
+     })
+     .catch((error) => {
+       console.error(error);
+     });
+ }, []);
+;
 
-  async function getUSDtoAEDRate() {
-    try {
-      const response = await axios.get(
-        "https://api.exchangerate-api.com/v4/latest/USD"
-      );
-      const rates = response.data.rates;
-      const usdToAEDRate = rates["AED"];
-      return usdToAEDRate;
-    } catch (error) {
-      console.error("Error fetching USD to AED rate:", error);
-      return null;
+  const calcUsdToAed = () => {
+    console.log(float); // Add this line to check the value of float
+    if (float.length === 0) {
+      return null; // or any other value you want to display when float is empty
     }
-  }
 
-  const calcTotalAed = async () => {
-    try {
-      let total = 0;
-      const usdToAEDRate = await getUSDtoAEDRate();
-      if (usdToAEDRate) {
-        float.forEach((item) => {
-          total += item.amount.toLocaleString();
-        });
-        total /= usdToAEDRate.toLocaleString();
-      }
-      return total;
-    } catch (error) {
-      console.error("Error calculating total in AED:", error);
-      return null;
-    }
+    let rate = 3.67;
+    float.forEach((item) => {
+      rate *= item.amount;
+    });
+    return rate.toLocaleString();
+  };
+
+  const calcClosingBalance = () => {
+    let currentDate = new Date().toISOString().split("T")[0];
+    const closing = (currentDate -= 1);
   };
 
   const handleAddFloat = () => {
@@ -69,7 +61,7 @@ function balance() {
         amount: amount,
       })
       .then((response) => {
-        setShow(false);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -111,8 +103,8 @@ function balance() {
                 <p className="font-semibold text-sm">Enter amount</p>
                 <input
                   type="text"
-                  value={float}
-                  onChange={(e) => setFloat(e.target.value)}
+                  value={amount} // Use amount instead of float
+                  onChange={(e) => setAmount(e.target.value)} // Update setAmount instead of setFloat
                   className="bg-[#ECEFF4]"
                   placeholder="6,363 USD"
                 />
@@ -131,26 +123,34 @@ function balance() {
             <table className="w-full">
               <thead>
                 <tr className="border-b text-left">
-                  <th className=" text-black/50 text-sm font-medium">Float</th>
                   <th className=" text-black/50 text-sm font-medium">
-                    Opening Balance
+                    Float (USD)
                   </th>
                   <th className=" text-black/50 text-sm font-medium">
-                    Closing Balance
+                    Opening Balance (AED)
+                  </th>
+                  <th className=" text-black/50 text-sm font-medium">
+                    Closing Balance (AED)
                   </th>
                 </tr>
               </thead>
               <tbody className="">
                 <tr>
-                  {float &&
+                  {Array.isArray(float) && float.length > 0 ? (
                     float.map((item, index) => (
                       <div key={index} className="">
-                        <td>{item.amount}</td>
+                        <td>{item.amount.toLocaleString()}</td>
                       </div>
-                    ))}
-                  <td className="text-sm ">6378 USD</td>
-                  <td className="text-sm ">367490 AED</td>
-                  <td className="text-sm ">2889 AED</td>
+                    ))
+                  ) : (
+                    <td
+                      colSpan="4"
+                      className="text-sm pt-4 pb-4 font-normal text-center"
+                    >
+                      No transactions were made on this day
+                    </td>
+                  )}
+                  <td>{calcUsdToAed()}</td>
                 </tr>
               </tbody>
             </table>

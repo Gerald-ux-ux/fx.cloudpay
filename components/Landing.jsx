@@ -10,6 +10,7 @@ import AddRate from "./AddRate";
 function Landing() {
   const [isOpen, setIsOpen] = useState(false);
   const [float, setFloat] = useState([]);
+  const [user, setUser] = useState(null);
   const [collections, setCollections] = useState([]);
 
   const toggle = () => setIsOpen(!isOpen);
@@ -19,6 +20,9 @@ function Landing() {
   const handleOpen = () => setOpenRates(!openRates);
 
   useEffect(() => {
+    const _user = localStorage.getItem("user");
+    if (_user) setUser(JSON.parse(_user));
+    console.log(typeof _user);
     const currentDate = new Date().toISOString().split("T")[0];
     const url = `http://127.0.0.1:3001/openings?date=${currentDate}`;
 
@@ -35,7 +39,19 @@ function Landing() {
       .catch((error) => {
         console.error(error);
       });
-  });
+  }, []);
+
+  const calcUsdToAed = () => {
+    if (float.length === 0) {
+      return 0;
+    }
+
+    let rate = 3.67;
+    float.forEach((item) => {
+      rate *= item.amount;
+    });
+    return rate.toLocaleString();
+  };
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
@@ -52,7 +68,6 @@ function Landing() {
         console.log(response.data);
       })
       .catch((error) => {
-        // Handle any errors
         console.error(error);
       });
   }, []);
@@ -115,6 +130,8 @@ function Landing() {
         <div className="flex w-full mr-8 ml-8 flex-col">
           <User />
           <div className="flex mr-4  items-center mt-20 flex-row w-full justify-between">
+            {user && <p>welcome {user.name}</p>}
+
             <DateSelector />
 
             <div className="flex items-center bg-[#ECEFF4] p-1 space-x-1 rounded-lg">
@@ -129,51 +146,24 @@ function Landing() {
               <div className="flex flex-col space-y-4">
                 <p>Total Transactions</p>
                 <p className="font-bold text-3xl">{calcTotalTransactions()}</p>
-                <div className="flex space-x-2 items-center">
-                  <div className="bg-[#06f] flex rounded-xl items-center p-1">
-                    <ArrowUpRightIcon className="h-4 text-white w-4" />
-                    <p className="text-xs  text-white">21%</p>
-                  </div>
-                  <p className="font-thin text-xs text-black/30">
-                    the last 3 months
-                  </p>
-                </div>
               </div>
             </div>
             <div className="bg-[#fff] shadow-gray-200 shadow p-4 w-full h-full rounded-xl">
               <div className="flex flex-col space-y-4">
                 <p>Kenyan Shillings</p>
                 <p className="font-bold text-3xl">{calcTotalCollections()}</p>
-                <div className="flex space-x-2 items-center">
-                  <div className="bg-[#06f] flex rounded-xl items-center p-1">
-                    <ArrowUpRightIcon className="h-4 text-white w-4" />
-                    <p className="text-xs  text-white">21%</p>
-                  </div>
-                  <p className="font-thin text-xs text-black/30">
-                    the last 3 months
-                  </p>
-                </div>
               </div>
             </div>
             <div className="bg-[#fff] shadow-gray-200 shadow p-4 w-full h-full rounded-xl">
               <div className="flex flex-col space-y-4">
                 <p>Arab Emirates Dirham </p>
-                <p className="font-bold text-3xl">16,633.57</p>
-                <div className="flex space-x-2 items-center">
-                  <div className="bg-[#06f] flex rounded-xl items-center p-1">
-                    <ArrowUpRightIcon className="h-4 text-white w-4" />
-                    <p className="text-xs  text-white">21%</p>
-                  </div>
-                  <p className="font-thin text-xs text-black/30">
-                    the last 3 months
-                  </p>
-                </div>
+                <p className="font-bold text-3xl">{calcUsdToAed()}</p>
               </div>
             </div>
           </div>
 
           <div className="flex h-2/3 flex-col mt-4">
-            <div className="bg-[#EFF1F4] rounded-xl p-4 w-full h-5/6">
+            <div className="bg-[#EFF1F4] rounded-xl p-4 w-full ">
               <div className="flex mb-4 justify-between">
                 <div className="flex flex-row space-x-2 items-center">
                   <AddRate handleOpen={handleOpen} openRates={openRates} />
@@ -197,20 +187,30 @@ function Landing() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b text-left ">
-                      <th className="text-base font-medium">Name</th>
-                      <th className="text-base font-medium">Collection</th>
+                      <th className=" text-black/50 text-sm font-medium">
+                        Name
+                      </th>
+                      <th className=" text-black/50 text-sm font-medium">
+                        Collection
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {collections &&
+                    {collections && collections.length > 0 ? (
                       collections.map((item, index) => (
                         <tr key={index} className="text-left">
-                          <>
-                            <td>{item.name}</td>
-                            <td>{item.amount.toLocaleString()}</td>
-                          </>
+                          <td>{item.name}</td>
+                          <td>{item.amount.toLocaleString()}</td>
                         </tr>
-                      ))}
+                      ))
+                    ) : (
+                      <tr
+                        colSpan="4"
+                        className="text-sm pt-4 pb-4 font-normal text-center"
+                      >
+                        <td>No transactions were made on this day</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

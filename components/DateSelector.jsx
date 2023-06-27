@@ -49,11 +49,32 @@ function DateSelector() {
     setSelectedTimeline(timeline);
     setShowDrop(false);
 
-    // Perform data fetch or update based on the selected timeline
+    // Perform data update or fetch based on the selected timeline
     const { startDate, endDate } = timeline.getDateRange();
     console.log("Selected timeline:", timeline);
     console.log("Selected timeline date range:", startDate, endDate);
     // Update data or fetch data based on the selected timeline
+    updateData(startDate, endDate);
+  };
+
+  const updateData = (startDate, endDate) => {
+    // Placeholder function for updating data based on the selected timeline
+    // You can implement your actual data update or fetch logic here
+    const url = `http://127.0.0.1:3001/collections?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
+
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setCollections(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (

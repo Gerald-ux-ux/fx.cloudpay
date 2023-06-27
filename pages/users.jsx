@@ -56,7 +56,7 @@ function users() {
         setUsers(res.data);
         console.log(res.data);
       })
-      .catch((err) => console.err(err));
+      .catch((error) => console.error(error));
   }, []);
 
   return (
@@ -133,14 +133,14 @@ function users() {
             </div>
           )}
 
-          <div className="flex p-4 bg-[#EFF1F4] rounded-xl flex-col">
-            <p className="text-lg">Active Users</p>
-            <div className="flex w-full justify-between">
+          <div className="flex p-4 w-full bg-[#EFF1F4] rounded-xl flex-col">
+            <p className="text-lg pb-2">Active Users</p>
+            <div className="w-full ">
               <div className="flex items-center space-x-2">
                 <div className="flex flex-col space-y-2 w-full">
                   {users &&
                     users.map((items, index) => (
-                      <div className="flex flex-col" key={index}>
+                      <div className="flex items-center justify-between w-full" key={index}>
                         <div className="flex items-center">
                           <div className="bg-[#D7DADF] flex rounded-full justify-center items-center text-sm h-10 w-10">
                             {items.name &&
