@@ -8,6 +8,7 @@ function Transactions() {
   const [disbursements, setDisbursements] = useState([]);
   const [float, setFloat] = useState([]);
   const [rateValue, setRateValue] = useState([]);
+  const [rate, setRate] = useState(38);
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
@@ -21,7 +22,7 @@ function Transactions() {
       })
       .then((response) => {
         setFloat(response.data);
-        console.log(response.data);
+        console.log("Opening", response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -39,7 +40,7 @@ function Transactions() {
       })
       .then((response) => {
         setCollections(response.data);
-        console.log(response.data);
+        console.log("collections", response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -57,7 +58,7 @@ function Transactions() {
         },
       })
       .then((response) => {
-        setRateValue(response.data);
+        setRateValue(response.data[0].amount);
         console.log(response.data);
       })
       .catch((error) => {
@@ -65,34 +66,18 @@ function Transactions() {
       });
   }, []);
 
+  // Calculate the closing balance
   const calcClosingBalance = () => {
     let totalCollections = calcUsdToAed();
-    console.log(calcUsdToAed());
+    console.log(totalCollections);
+    let totalDisbursements = calcDisbursements();
 
-    float.forEach(() => {
-      totalCollections -= calcDisbursementTotal();
-
-      console.log(calcDisbursementTotal());
-    });
-    return totalCollections.toLocaleString();
-  };
-
-  const calcDisbursements = () => {
-    let totalDisbursements = 0;
-    if (rateValue && rateValue.length > 0) {
-      const rate = rateValue[0].amount;
-      // Divide each collection by the rate
-      collections.forEach((collection) => {
-        const disbursement = collection.amount / rate;
-        totalDisbursements += disbursement;
-      });
-    }
-
-    return totalDisbursements;
+    console.log(totalDisbursements);
+    return parseFloat(totalCollections - totalDisbursements)?.toFixed(2);
   };
 
   const handleAddDisbursments = (amount) => {
-    const url = "http://127.0.0.1:3001/disbursments";
+    const url = "http://127.0.0.1:3001/disbursements";
 
     axios
       .post(url, {
@@ -108,7 +93,7 @@ function Transactions() {
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/disbursments?date=${currentDate}`;
+    const url = `http://127.0.0.1:3001/disbursements?date=${currentDate}`;
 
     axios
       .get(url, {
@@ -118,34 +103,33 @@ function Transactions() {
       })
       .then((response) => {
         setDisbursements(response.data);
-        console.log(response.data);
         const calculatedValue = calcDisbursements();
         handleAddDisbursments(calculatedValue);
         const totalDisbursement = calcDisbursementTotal();
-        console.log(totalDisbursement);
       })
-      .catch((error) => {
-        console.error(error);
-      });
+      .catch((error) => {});
   }, []);
 
-  const calcDisbursementTotal = () => {
-    let total = 0;
-    disbursements.forEach((item) => {
-      if (item.disbursment !== null) {
-        total += item.disbursment;
-      }
-
-      console.log(total);
+  // Calculating each disbursment
+  const calcDisbursements = () => {
+    let totalDisbursements = 0;
+    // Divide each collection by the rate
+    collections.forEach((item) => {
+      const disbursement = parseFloat(item.amount) / parseFloat(rateValue);
+      totalDisbursements += disbursement;
     });
-    return total;
+
+    return totalDisbursements;
   };
+
+  // Calculating the total disbusrments
 
   const calcNumberTotal = () => {
     const total = collections.length;
     return total.toLocaleString();
   };
 
+  // Clacculation the total collection
   const calculateTotal = () => {
     let total = 0;
     collections.forEach((item) => {
@@ -163,7 +147,7 @@ function Transactions() {
     float.forEach((item) => {
       rate *= item.amount;
     });
-    return rate.toLocaleString();
+    return rate;
   };
 
   return (
@@ -183,11 +167,15 @@ function Transactions() {
           <div className="flex justify-between w-full  p-4 bg-[#EFF1F4] rounded-lg items-center">
             <p className="">
               Opening balance{" "}
-              <span className="font-semibold">{calcUsdToAed()}</span>
+              <span className="font-semibold">
+                {calcUsdToAed().toLocaleString()}
+              </span>
             </p>
             <p className="">
               Closing balance{" "}
-              <span className=" font-semibold">{calcClosingBalance()}</span>
+              <span className=" font-semibold">
+                {calcClosingBalance().toLocaleString()}
+              </span>
             </p>
           </div>
           <div className="flex bg-[#EFF1F4] p-4 rounded-xl mt-4 flex-col">
@@ -216,7 +204,7 @@ function Transactions() {
                         {item.amount.toLocaleString()}
                       </td>
                       <td className="text-sm font-normal">
-                        {calcDisbursements()}
+                        {parseFloat(item.amount / rateValue).toFixed(2)}
                       </td>
                     </tr>
                   ))
@@ -237,7 +225,7 @@ function Transactions() {
                   <td className="text-sm font-semibold">{calcNumberTotal()}</td>
                   <td className="text-sm font-semibold">{calculateTotal()}</td>
                   <td className="text-sm font-semibold">
-                    {calcDisbursementTotal()}
+                    {calcDisbursements().toFixed(2)}
                   </td>
                 </tr>
               </tfoot>

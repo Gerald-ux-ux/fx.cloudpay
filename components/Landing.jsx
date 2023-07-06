@@ -21,7 +21,10 @@ function Landing() {
 
   useEffect(() => {
     const _user = localStorage.getItem("user");
-    if (_user) setUser(JSON.parse(_user));
+    if (_user) {
+      const capitalizedUser = _user.charAt(0).toUpperCase() + _user.slice(1);
+      setUser(JSON.parse(capitalizedUser));
+    }
     console.log(typeof _user);
     const currentDate = new Date().toISOString().split("T")[0];
     const url = `http://127.0.0.1:3001/openings?date=${currentDate}`;
@@ -130,9 +133,10 @@ function Landing() {
         <div className="flex w-full mr-8 ml-8 flex-col">
           <User />
           <div className="flex mr-4  items-center mt-20 flex-row w-full justify-between">
-            {user && <p>welcome {user.name}</p>}
-
             <DateSelector />
+            {user && (
+              <p className="text-sm font-semibold">Welcome Back {user.name}</p>
+            )}
 
             <div className="flex items-center bg-[#ECEFF4] p-1 space-x-1 rounded-lg">
               <img src="Images/Export.svg" />
