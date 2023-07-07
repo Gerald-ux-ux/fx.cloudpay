@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../slices/userSlice";
+import axios from "axios";
+//import { login } from "../slices/userSlice";
 
 function Login() {
   const router = useRouter();
@@ -30,7 +31,16 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(login(formData));
+    console.log(formData);
+    axios
+      .post("http://127.0.0.1:3001/users/login", formData)
+      .then((response) => {
+        localStorage.setItem("user", JSON.stringify(response.data.data));
+        router.push("/home");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (

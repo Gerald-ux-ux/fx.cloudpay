@@ -65,11 +65,10 @@ function users() {
         <SideBar />
         <div className="flex flex-col w-full">
           <User />
-          <div className="flex mr-4 mb-6  items-center mt-20   flex-row w-full justify-between">
-            <p>Today</p>
+          <div className="flex mr-4 mb-6  items-center mt-20   flex-row w-full justify-end">
             <button
               onClick={handleShow}
-              className="bg-[#ECEFF4] flex items-center p-2 text rounded-xl"
+              className="bg-[#ECEFF4] flex items-center  p-2 text rounded-xl"
             >
               <PlusIcon className="h-4 w-4 " />
               Add user
@@ -140,7 +139,10 @@ function users() {
                 <div className="flex flex-col space-y-2 w-full">
                   {users &&
                     users.map((items, index) => (
-                      <div className="flex items-center justify-between w-full" key={index}>
+                      <div
+                        className="flex items-center justify-between w-full"
+                        key={index}
+                      >
                         <div className="flex items-center">
                           <div className="bg-[#D7DADF] flex rounded-full justify-center items-center text-sm h-10 w-10">
                             {items.name &&

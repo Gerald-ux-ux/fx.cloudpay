@@ -10,7 +10,7 @@ import AddRate from "./AddRate";
 function Landing() {
   const [isOpen, setIsOpen] = useState(false);
   const [float, setFloat] = useState([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [collections, setCollections] = useState([]);
 
   const toggle = () => setIsOpen(!isOpen);
@@ -18,6 +18,7 @@ function Landing() {
   const [openRates, setOpenRates] = useState(false);
 
   const handleOpen = () => setOpenRates(!openRates);
+  const authUser = () => JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const _user = localStorage.getItem("user");
@@ -27,13 +28,16 @@ function Landing() {
     }
     console.log(typeof _user);
     const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/openings?date=${currentDate}`;
+    const url = `http://127.0.0.1:3001/openings?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
 
     axios
       .get(url, {
         headers: {
           "Content-Type": "application/json",
         },
+        user_id: user?.id,
       })
       .then((response) => {
         setFloat(response.data);
@@ -58,7 +62,9 @@ function Landing() {
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/collections?date=${currentDate}`;
+    const url = `http://127.0.0.1:3001/collections?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
 
     axios
       .get(url, {
@@ -68,7 +74,7 @@ function Landing() {
       })
       .then((response) => {
         setCollections(response.data);
-        console.log(response.data);
+        console.log('Collections',response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -133,16 +139,16 @@ function Landing() {
         <div className="flex w-full mr-8 ml-8 flex-col">
           <User />
           <div className="flex mr-4  items-center mt-20 flex-row w-full justify-between">
-            <DateSelector />
+            {/* <DateSelector /> */}
             {user && (
               <p className="text-sm font-semibold">Welcome Back {user.name}</p>
             )}
 
             <div className="flex items-center bg-[#ECEFF4] p-1 space-x-1 rounded-lg">
-              <img src="Images/Export.svg" />
+              {/* <img src="Images/Export.svg" />
               <button className="font-normal text-sm text-[#0066FF]">
                 Export Report{" "}
-              </button>
+              </button> */}
             </div>
           </div>
           <div className="flex flex-row mt-4  justify-between space-x-8 items-center">

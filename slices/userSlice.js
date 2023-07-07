@@ -22,8 +22,10 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.success = true;
       state.error = null;
+      console.log("Succedss ", state);
     },
     loginFailure: (state, action) => {
+      console.log("login failure", state);
       state.isLoading = false;
       state.error = action.payload;
       state.success = false;
@@ -31,6 +33,7 @@ const authSlice = createSlice({
     },
   },
 });
+console.log('authlice');
 
 export const { loginStart, loginSuccess, loginFailure } = authSlice.actions;
 
@@ -42,6 +45,7 @@ export const login = () => {
       // Perform API request to authenticate the user
       const url = "http://127.0.0.1:3001/users/login";
       const response = await axios.post(url);
+      console.log("Users authenticated", response);
 
       localStorage.setItem("user", JSON.stringify(response.data));
 

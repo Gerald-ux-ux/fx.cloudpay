@@ -9,33 +9,51 @@ function balance() {
   const [float, setFloat] = useState([]);
   const [show, setShow] = useState(false);
   const [amount, setAmount] = useState("");
-  const [collections, setCollections] = useState("");
+  const [collections, setCollections] = useState([]);
+  const [rateValue, setRateValue] = useState([]);
+  const [closingBalance, setClosingBalance] = useState([]);
+  const authUser = () => JSON.parse(localStorage.getItem("user"));
+
+
+  // post the value that is displayed then also get the value for additional purposes
+
+  // const handlePostClosingBalance = () => {
+  //   const currentDate = new Date().toISOString().split("T")[0];
+
+  //   if (currentDate - 1 > 0) {
+  //     let float = setFloat;
+  //     return (setClosingBalance += float);
+  //   }
+
+  //   const url = `http://127.0.0.1:3001/closing?date=${currentDate}&user_id=${
+  //     authUser()?.id
+  //   }`;
+  // };
 
   // Fetching the Float
- useEffect(() => {
-   const currentDate = new Date().toISOString().split("T")[0];
-   const url = `http://127.0.0.1:3001/openings?date=${currentDate}`;
+  useEffect(() => {
+    const currentDate = new Date().toISOString().split("T")[0];
+    const url = `http://127.0.0.1:3001/openings?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
 
-   axios
-     .get(url, {
-       headers: {
-         "Content-Type": "application/json",
-       },
-     })
-     .then((response) => {
-       const data = response.data;
-       const floatArray = Array.isArray(data) ? data : [data]; // Convert object to array if it's not already an array
-       setFloat(floatArray);
-       console.log(floatArray);
-     })
-     .catch((error) => {
-       console.error(error);
-     });
- }, []);
-;
-
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        const data = response.data;
+        const floatArray = Array.isArray(data) ? data : [data]; // Convert object to array if it's not already an array
+        setFloat(floatArray);
+        console.log(floatArray);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
   const calcUsdToAed = () => {
-    console.log(float); // Add this line to check the value of float
     if (float.length === 0) {
       return null; // or any other value you want to display when float is empty
     }
@@ -43,13 +61,74 @@ function balance() {
     let rate = 3.67;
     float.forEach((item) => {
       rate *= item.amount;
+      // Check if the previous day had any closing balance left. If so, add the amount to float(rate) of the new day
+      console.log("rate", rate);z
     });
-    return rate.toLocaleString();
+
+    return rate;
+  };
+
+  useEffect(() => {
+    const currentDate = new Date().toISOString().split("T")[0];
+    const url = `http://127.0.0.1:3001/rates?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
+
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setRateValue(response.data[0].amount);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const currentDate = new Date().toISOString().split("T")[0];
+    const url = `http://127.0.0.1:3001/collections?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setCollections(response.data);
+        console.log("collections", response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  // Calculating each disbursment
+  const calcDisbursements = () => {
+    let totalDisbursements = 0;
+    // Divide each collection by the rate
+    collections.forEach((item) => {
+      console.log("Rate Value", rateValue);
+      const disbursement = parseFloat(item.amount) / parseFloat(rateValue);
+      totalDisbursements += disbursement;
+    });
+
+    return totalDisbursements;
   };
 
   const calcClosingBalance = () => {
-    let currentDate = new Date().toISOString().split("T")[0];
-    const closing = (currentDate -= 1);
+    let totalCollections = calcUsdToAed();
+    console.log("SDDDDD", totalCollections);
+    let totalDisbursements = calcDisbursements();
+
+    console.log("totalDisbursements", totalDisbursements);
+    return parseFloat(totalCollections - totalDisbursements)?.toFixed(2);
   };
 
   const handleAddFloat = () => {
@@ -59,6 +138,7 @@ function balance() {
     axios
       .post(url, {
         amount: amount,
+        user_id: authUser()?.id,
       })
       .then((response) => {
         console.log(response.data);
@@ -84,10 +164,10 @@ function balance() {
           <User />
 
           <div className="flex mr-4 mb-6  items-center mt-20   flex-row w-full justify-between">
-            <DateSelector />
+            {/* <DateSelector />
             <button className="bg-[#ECEFF4] p-2 text rounded-xl">
               Export Report
-            </button>
+            </button> */}
           </div>
           <div className=" flex justify-end mb-4 items-center">
             <button
@@ -151,6 +231,7 @@ function balance() {
                     </td>
                   )}
                   <td>{calcUsdToAed()}</td>
+                  <td>{calcClosingBalance()}</td>
                 </tr>
               </tbody>
             </table>

@@ -3,13 +3,15 @@ import React, { useState } from "react";
 
 function AddRate({ handleOpen, openRates }) {
   const [rateValue, setRateValue] = useState("");
+  const authUser = () => JSON.parse(localStorage.getItem("user"));
 
   const handleAddRate = () => {
     const url = "http://127.0.0.1:3001/rates";
 
     axios
       .post(url, {
-        amonut: rateValue,
+        amount: rateValue,
+        user_id: authUser()?.id,
       })
       .then((response) => {
         handleOpen();

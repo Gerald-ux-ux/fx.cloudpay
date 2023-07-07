@@ -42,6 +42,20 @@ function DateSelector() {
   const [showDrop, setShowDrop] = useState(false);
   const [selectedTimeline, setSelectedTimeline] = useState(selector[0]);
 
+  // const Tags = ["Today", "This Week", "This Month"];
+
+  // if (Tags === "Today") {
+  //   return new Date();
+  // } else if (Tags === "This Week") {
+  //   const Today = new Date();
+  //   const startDate = new Date(Today);
+  //   startDate.setDate(Today.getDate() - 6);
+  //   return {
+  //     startDate,
+  //     endDate: Today,
+  //   };
+  // } else
+
   const handleDrop = () => {
     setShowDrop(!showDrop);
   };

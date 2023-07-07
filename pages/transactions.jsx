@@ -8,11 +8,14 @@ function Transactions() {
   const [disbursements, setDisbursements] = useState([]);
   const [float, setFloat] = useState([]);
   const [rateValue, setRateValue] = useState([]);
-  const [rate, setRate] = useState(38);
+
+  const authUser = () => JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/openings?date=${currentDate}`;
+    const url = `http://127.0.0.1:3001/openings?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
 
     axios
       .get(url, {
@@ -31,7 +34,9 @@ function Transactions() {
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/collections?date=${currentDate}`;
+    const url = `http://127.0.0.1:3001/collections?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
     axios
       .get(url, {
         headers: {
@@ -49,7 +54,9 @@ function Transactions() {
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/rates?date=${currentDate}`;
+    const url = `http://127.0.0.1:3001/rates?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
 
     axios
       .get(url, {
@@ -82,6 +89,7 @@ function Transactions() {
     axios
       .post(url, {
         amount: amount.replace(/[.,]/g, ""),
+        user_id: authUser()?.id,
       })
       .then((response) => {
         console.log(response.data);
@@ -93,7 +101,9 @@ function Transactions() {
 
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/disbursements?date=${currentDate}`;
+    const url = `http://127.0.0.1:3001/disbursements?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
 
     axios
       .get(url, {
@@ -158,10 +168,10 @@ function Transactions() {
           <User />
 
           <div className="flex mr-4 mb-6  items-center mt-20   flex-row w-full justify-between">
-            <p>Today</p>
+            {/* <p>Today</p>
             <button className="bg-[#ECEFF4] p-2 text rounded-xl">
               Export Report
-            </button>
+            </button> */}
           </div>
 
           <div className="flex justify-between w-full  p-4 bg-[#EFF1F4] rounded-lg items-center">

@@ -7,15 +7,20 @@ function AddCollection({ isOpen, toggle }) {
   const [collectionValue, setCollectionValue] = useState("");
 
   const handleAddToCollection = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
     const currentDate = new Date().toISOString().split("T")[0];
     const url = `http://127.0.0.1:3001/collections?date=${currentDate}`;
+    const formData = {
+      collection: {
+        amount: collectionValue,
+        user_id: user?.id,
+        name: nameValue,
+      },
+    };
+    console.log("form data", formData);
 
     axios
-      .post(url, {
-        amount: collectionValue,
-        user_id: 11,
-        collection: nameValue,
-      })
+      .post(url, formData)
       .then((response) => {
         toggle();
         // Handle the response data
