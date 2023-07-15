@@ -2,11 +2,12 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 function User() {
+  const authUser = () => JSON.parse(localStorage.getItem("user"));
   const [users, setUsers] = useState();
 
   useEffect(() => {
-    const url = "http://127.0.0.1:3001/users";
-    
+    const url = `http://127.0.0.1:3001/users&user_id=${authUser()?.id}`;
+
     axios
       .get(url, {
         headers: {

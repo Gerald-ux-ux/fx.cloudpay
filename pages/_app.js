@@ -8,12 +8,12 @@ import { useEffect } from "react";
 export default function App({ Component, pageProps }) {
   const router = useRouter();
 
-  // useEffect(() => {
-  //   const isLoggedIn = localStorage.getItem("isLoggedIn");
-  //   if (!isLoggedIn && router.pathname !== "/login") {
-  //     router.push("/login");
-  //   }
-  // }, []);
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    if (!isLoggedIn && router.pathname !== "/login") {
+      router.push("/login");
+    } 
+  }, []);
 
   return (
     <Provider store={store}>

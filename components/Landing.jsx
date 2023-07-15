@@ -8,6 +8,7 @@ import DateSelector from "./DateSelector";
 import AddRate from "./AddRate";
 
 function Landing() {
+  const [rateValue, setRateValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [float, setFloat] = useState([]);
   const [user, setUser] = useState({});
@@ -48,6 +49,51 @@ function Landing() {
       });
   }, []);
 
+  useEffect(() => {
+    const currentDate = new Date().toISOString().split("T")[0];
+    const url = `http://127.0.0.1:3001/rates?date=${currentDate}&user_id=${
+      authUser()?.id
+    }`;
+
+    axios
+      .get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setRateValue(response.data[0].amount);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  const calcDisbursements = () => {
+    let totalDisbursements = 0;
+    // Divide each collection by the rate
+    collections.forEach((item) => {
+      console.log("Rate Value", rateValue);
+      const disbursement = parseFloat(item.amount) / parseFloat(rateValue);
+      totalDisbursements += disbursement;
+    });
+
+    return totalDisbursements;
+  };
+
+  const calcClosingBalance = () => {
+    let totalCollections = calcUsdToAed();
+    let totalDisbursements = calcDisbursements();
+
+    console.log("totalcollections", totalCollections);
+
+    console.log("totalDisbursements", totalDisbursements);
+    return parseFloat(totalCollections - totalDisbursements)
+      ?.toFixed(2)
+      .toLocaleString();
+  };
+
   const calcUsdToAed = () => {
     if (float.length === 0) {
       return 0;
@@ -57,7 +103,7 @@ function Landing() {
     float.forEach((item) => {
       rate *= item.amount;
     });
-    return rate.toLocaleString();
+    return rate;
   };
 
   useEffect(() => {
@@ -74,7 +120,7 @@ function Landing() {
       })
       .then((response) => {
         setCollections(response.data);
-        console.log('Collections',response.data);
+        console.log("Collections", response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -160,14 +206,16 @@ function Landing() {
             </div>
             <div className="bg-[#fff] shadow-gray-200 shadow p-4 w-full h-full rounded-xl">
               <div className="flex flex-col space-y-4">
-                <p>Kenyan Shillings</p>
+                <p>Collections (Kes)</p>
                 <p className="font-bold text-3xl">{calcTotalCollections()}</p>
               </div>
             </div>
             <div className="bg-[#fff] shadow-gray-200 shadow p-4 w-full h-full rounded-xl">
               <div className="flex flex-col space-y-4">
-                <p>Arab Emirates Dirham </p>
-                <p className="font-bold text-3xl">{calcUsdToAed()}</p>
+                <p>Available float (AED) </p>
+                <p className="font-bold text-3xl">
+                  {calcClosingBalance().toLocaleString()}
+                </p>
               </div>
             </div>
           </div>

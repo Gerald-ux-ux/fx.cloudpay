@@ -14,21 +14,23 @@ function balance() {
   const [closingBalance, setClosingBalance] = useState([]);
   const authUser = () => JSON.parse(localStorage.getItem("user"));
 
-
   // post the value that is displayed then also get the value for additional purposes
 
-  // const handlePostClosingBalance = () => {
-  //   const currentDate = new Date().toISOString().split("T")[0];
-
-  //   if (currentDate - 1 > 0) {
-  //     let float = setFloat;
-  //     return (setClosingBalance += float);
-  //   }
-
-  //   const url = `http://127.0.0.1:3001/closing?date=${currentDate}&user_id=${
-  //     authUser()?.id
-  //   }`;
-  // };
+  const handlePostClosingBalance = () => {
+    const currentDate = new Date().toISOString().split("T")[0];
+    const url = `http://127.0.0.1:3001/closings?date=${currentDate}`;
+    axios
+      .post(url, {
+        amount: closingBalance,
+        user_id: authUser()?.id,
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   // Fetching the Float
   useEffect(() => {
@@ -62,7 +64,7 @@ function balance() {
     float.forEach((item) => {
       rate *= item.amount;
       // Check if the previous day had any closing balance left. If so, add the amount to float(rate) of the new day
-      console.log("rate", rate);z
+      console.log("rate", rate);
     });
 
     return rate;
@@ -124,16 +126,16 @@ function balance() {
 
   const calcClosingBalance = () => {
     let totalCollections = calcUsdToAed();
-    console.log("SDDDDD", totalCollections);
     let totalDisbursements = calcDisbursements();
 
     console.log("totalDisbursements", totalDisbursements);
     return parseFloat(totalCollections - totalDisbursements)?.toFixed(2);
   };
 
+
+
   const handleAddFloat = () => {
-    const currentDate = new Date().toISOString().split("T")[0];
-    const url = `http://127.0.0.1:3001/openings?date=${currentDate}`;
+    const url = "http://127.0.0.1:3001/openings";
 
     axios
       .post(url, {
@@ -142,6 +144,7 @@ function balance() {
       })
       .then((response) => {
         console.log(response.data);
+        handleHide()
       })
       .catch((error) => {
         console.error(error);
@@ -219,7 +222,7 @@ function balance() {
                   {Array.isArray(float) && float.length > 0 ? (
                     float.map((item, index) => (
                       <div key={index} className="">
-                        <td>{item.amount.toLocaleString()}</td>
+                        <td>{item.amount?.toLocaleString()}</td>
                       </div>
                     ))
                   ) : (
@@ -231,6 +234,7 @@ function balance() {
                     </td>
                   )}
                   <td>{calcUsdToAed()}</td>
+
                   <td>{calcClosingBalance()}</td>
                 </tr>
               </tbody>

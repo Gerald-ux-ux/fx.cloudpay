@@ -75,41 +75,40 @@ function users() {
             </button>
           </div>
           {show && (
-            <div className="flex flex-col mb-4 mt-4 bg-[#EFF1F4] p-4 rounded-lg">
-              <div className="flex justify-between items-center">
+            <div className="flex flex-col w-full mb-4 mt-4 bg-[#EFF1F4] p-4 rounded-lg">
+              <div className="flex w-full justify-between items-center">
                 <form
                   onSubmit={handleFormSubmit}
-                  className="flex space-y-2 w-full flex-col"
+                  className="flex gap-4 w-full  flex-col"
                 >
-                  <div className="flex items-center">
-                    <p>Name</p>
-                    <input
-                      type="text"
-                      placeholder="Enter name"
-                      className="bg-[#EFF1F4] ml-10"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <p>Email</p>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter email address"
-                      className="bg-[#EFF1F4]  ml-11"
-                    />
+                  <div className="flex space-x-2 w-full">
+                    <div className="flex w-full items-center">
+                      <input
+                        type="text"
+                        placeholder="Enter name"
+                        className="bg-[#EFF1F4] border p-2 rounded-lg ml-2 w-full "
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex w-full items-center">
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter email address"
+                        className="bg-[#EFF1F4] border p-2 rounded-lg ml-2 w-full "
+                      />
+                    </div>
                   </div>
 
                   <div className="flex items-center">
-                    <p>Password</p>
                     <input
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter Password"
-                      className="bg-[#EFF1F4] ml-3"
+                      placeholder="Enter password"
+                      className="bg-[#EFF1F4] border p-2 rounded-lg ml-2 w-full "
                     />
                   </div>
                   <div className="flex w-full space-x-2">
